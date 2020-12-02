@@ -6,19 +6,19 @@ from torch.utils.data import DataLoader
 from model import Model
 from dataset import Dataset
 
-def train(dataset, model, args):
+def train(dataset, model, max_epochs, batch_size, sequence_length):
     model.train()
 
     dataloader = DataLoader(
         dataset,
-        batch_size=args.batch_size,
+        batch_size=batch_size,
     )
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    for epoch in range(args.max_epochs):
-        state_h, state_c = model.init_state(args.sequence_length)
+    for epoch in range(max_epochs):
+        state_h, state_c = model.init_state(sequence_length)
 
         for batch, (x, y) in enumerate(dataloader):
 
@@ -51,15 +51,3 @@ def predict(dataset, model, text, next_words=100):
         words.append(dataset.index_to_word[word_index])
 
     return words
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--max-epochs', type=int, default=10)
-parser.add_argument('--batch-size', type=int, default=256)
-parser.add_argument('--sequence-length', type=int, default=4)
-args = parser.parse_args()
-
-dataset = Dataset(args)
-model = Model(dataset)
-
-train(dataset, model, args)
-print(predict(dataset, model, text='Knock knock. Whos there?'))

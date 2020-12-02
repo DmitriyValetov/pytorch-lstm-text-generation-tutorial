@@ -5,9 +5,9 @@ from collections import Counter
 class Dataset(torch.utils.data.Dataset):
     def __init__(
         self,
-        args,
+        sequence_length,
     ):
-        self.args = args
+        self.sequence_length = sequence_length
         self.words = self.load_words()
         self.uniq_words = self.get_uniq_words()
 
@@ -26,10 +26,10 @@ class Dataset(torch.utils.data.Dataset):
         return sorted(word_counts, key=word_counts.get, reverse=True)
 
     def __len__(self):
-        return len(self.words_indexes) - self.args.sequence_length
+        return len(self.words_indexes) - self.sequence_length
 
     def __getitem__(self, index):
         return (
-            torch.tensor(self.words_indexes[index:index+self.args.sequence_length]),
-            torch.tensor(self.words_indexes[index+1:index+self.args.sequence_length+1]),
+            torch.tensor(self.words_indexes[index:index+self.sequence_length]),
+            torch.tensor(self.words_indexes[index+1:index+self.sequence_length+1]),
         )
